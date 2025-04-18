@@ -14,10 +14,10 @@ Our approach follows these steps:
 
 1. Build a conflict graph where classes are vertices and edges represent scheduling conflicts
 2. Color the graph using our custom algorithm:
-   - Prioritize classes with more conflicts
-   - Assign time slots to avoid conflicts
-   - Resolve any conflicts that arise
-   - Continue until all classes are scheduled
+   - Pick a pivot vertex to start with and assign a color
+   - Assign neighbors a different color
+   - Check if neighbors have edges and change on of their colors
+   - Pick a new pivot and repeat
 
 ## Usage
 
