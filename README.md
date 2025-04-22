@@ -19,6 +19,14 @@ Our approach follows these steps:
    - Check if neighbors have edges and change on of their colors
    - Pick a new pivot and repeat
 
+Consider the following for more efficiency:
+1. Order by “saturation degree” (number of differently‑colored neighbors) rather than just raw degree.
+   - Going to be implemented in Neighbors folder
+2. Shuffle your vertex list a few times and rerun the greedy coloring—track the minimum slots you see.
+   - This is implemented in Random folder
+3. When two vertices have the same degree, pick the one whose neighbors are more “constrained” (e.g. higher average neighbor degree) first.
+   - Going to be implemented in Neighbors folder
+
 ## Usage
 
 Follow the commands:
