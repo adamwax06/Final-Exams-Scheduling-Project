@@ -1,6 +1,7 @@
 import java.io.*;
 import java.util.*;
 
+
 public class ExamScheduler{
     // our conflict graph
     private Graph graph;
@@ -57,87 +58,59 @@ public class ExamScheduler{
 
     /**
      * color the graph following the algorithm below:
-     * 1. arbitrarily pick a vertex and color it
-     * 2. go to neighbors and give different colors
-     * 3. check neighbors; if adjacent neighbors share a color, change one
-     * 4. if not fully colored, repeat process with uncolored vertices
+     * 1. put all vertices into an “uncolored” set and clear any previous colors. 
+     *      Repeat until no uncolored vertices remain
+     * 2. select the uncolored vertex with highest saturation
+     * 3. assign it the smallest non‐negative color not used by its neighbors
+     * 4. remove it from the uncolored set.
+     * 5. update the colorGroups mapping for time‐slots
      * 
      * @return map of vertices to their assigned colors
      */
-    public Map<String, Integer> colorGraph() {
-        // clear any existing coloring
+    public Map<String,Integer> colorGraph() {
         colors.clear();
         colorGroups.clear();
-        
-        if (graph.isEmpty()) {
-            return colors;
-        }
-        
-        // get all vertices
-        List<String> vertices = new ArrayList<>(graph.getVertices());
-        
-        // sort vertices by degree (number of conflicts) in descending order
-        vertices.sort((v1, v2) -> Integer.compare(graph.getDegree(v2), graph.getDegree(v1)));
-        
-        Random rand = new Random();
-
-        // process all vertices
-        while (!vertices.isEmpty()) {
-            String current;
-            // first pick is random
-            if (colors.isEmpty()) {
-                int idx = rand.nextInt(vertices.size());
-                current = vertices.remove(idx);
-            } else {
-                current = vertices.remove(0);
-            }
-
-            // assign color based on neighbor colors
-            Set<Integer> neighborColors = new HashSet<>();
-            for (String neighbor : graph.getNeighbors(current)) {
-                if (colors.containsKey(neighbor)) {
-                    neighborColors.add(colors.get(neighbor));
+    
+        // all vertices start uncolored
+        Set<String> uncolored = new HashSet<>(graph.getVertices());
+    
+        while (!uncolored.isEmpty()) {
+            String pick = null;
+            int bestSat = -1, bestDeg = -1;
+    
+            // find the uncolored vertex with max saturation, tie‑break on degree
+            for (String v : uncolored) {
+                // compute saturation = # of distinct neighbor colors
+                Set<Integer> neighCols = new HashSet<>();
+                for (String n : graph.getNeighbors(v)) {
+                    if (colors.containsKey(n)) 
+                        neighCols.add(colors.get(n));
+                }
+                int sat = neighCols.size();
+                int deg = graph.getDegree(v);
+    
+                if (sat > bestSat || (sat == bestSat && deg > bestDeg)) {
+                    bestSat = sat;
+                    bestDeg = deg;
+                    pick = v;
                 }
             }
-            int color = 0;
-            while (neighborColors.contains(color)) {
-                color++;
+    
+            // now color 'pick' with the smallest available color
+            Set<Integer> used = new HashSet<>();
+            for (String n : graph.getNeighbors(pick)) {
+                if (colors.containsKey(n)) used.add(colors.get(n));
             }
-            colors.put(current, color);
-            
-            // step 2: go to neighbors and give different colors
-            for (String neighbor : graph.getNeighbors(current)) {
-                if (!colors.containsKey(neighbor)) {
-                    // get colors used by neighbor's neighbors
-                    Set<Integer> neighborOfNeighborColors = new HashSet<>();
-                    for (String n : graph.getNeighbors(neighbor)) {
-                        if (colors.containsKey(n)) {
-                            neighborOfNeighborColors.add(colors.get(n));
-                        }
-                    }
-                    
-                    // assign smallest available color different from current
-                    int neighborColor = 0;
-                    while (neighborOfNeighborColors.contains(neighborColor) || neighborColor == color) {
-                        neighborColor++;
-                    }
-                    
-                    colors.put(neighbor, neighborColor);
-                }
-            }
-            
-            // step 3: Check for conflicts between neighbors
-            resolveConflicts();
-            
-            // step 4: If not fully colored, repeat with uncolored vertices
-            vertices.removeIf(v -> colors.containsKey(v));
+            int c = 0;
+            while (used.contains(c)) c++;
+            colors.put(pick, c);
+            uncolored.remove(pick);
         }
-        
-        // update color groups
+    
         updateColorGroups();
-        
         return colors;
     }
+        
     
     /**
      * check and resolve color conflicts between adjacent vertices
@@ -299,59 +272,5 @@ public class ExamScheduler{
     }
 
     //public int getMin()
-    
-    public static void main(String[] args) {
-        int min = Integer.MAX_VALUE;
-        for (int i = 0; i<100; i++){
-            System.out.println(i+" run: ");
-            //String filename = args[0];
-            ExamScheduler scheduler = new ExamScheduler();
-            try {
-                scheduler.readFromFile("student_courses.txt");
-                scheduler.colorGraph();
-                System.out.println("Number of time slots needed: " + scheduler.getNumTimeSlots());
-                
-               /*  System.out.println("Exam Schedule:");
-                scheduler.getExamSchedule().forEach((slot, list) ->
-                    System.out.println(slot + ": " + String.join(", ", list))
-                );*/
-                System.out.println("Is valid coloring: " + scheduler.isValidColoring());
-            } catch (FileNotFoundException e) {
-                System.err.println("File not found:. ");
-            }
-            if (min>scheduler.getNumTimeSlots()) min = scheduler.getNumTimeSlots();
-        }
-        System.out.println("Minimum is: "+ min);
-        
-        
-        /*try {
-            // create a new scheduler
-            ExamScheduler scheduler = new ExamScheduler();
-            
-            // create a sample graph
-            scheduler.createSampleGraph();
-            
-            // print the graph
-            System.out.println("Conflict Graph:");
-            System.out.println(scheduler.getGraph().toString());
-            System.out.println();
-            
-            // color the graph
-            scheduler.colorGraph();
-            
-            // print the schedule
-            System.out.println("Number of time slots needed: " + scheduler.getNumTimeSlots());
-            System.out.println("Exam Schedule:");
-            Map<String, List<String>> schedule = scheduler.getExamSchedule();
-            for (Map.Entry<String, List<String>> entry : schedule.entrySet()) {
-                System.out.println(entry.getKey() + ": " + String.join(", ", entry.getValue()));
-            }
-            
-            // validate the coloring
-            System.out.println("\nIs valid coloring: " + scheduler.isValidColoring());
-            
-        } catch (Exception e) {
-            e.printStackTrace();
-        }*/
-    }
+   
 }
