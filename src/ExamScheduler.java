@@ -11,6 +11,9 @@ public class ExamScheduler{
     // mapping of time slots to their classes
     private Map<Integer, List<String>> colorGroups;
 
+    // mapping of students to their classes
+    private Map<String, Set<String>> studentCourses;
+
     /**
      * constructs a new exam scheduler object
      */
@@ -18,6 +21,7 @@ public class ExamScheduler{
         graph = new Graph();
         colors = new HashMap<>();
         colorGroups = new HashMap<>();
+        studentCourses = new HashMap<>();
     }
 
     /**
@@ -42,14 +46,14 @@ public class ExamScheduler{
     public void createGraph() {
         try{
             // add classes from existing course catalog
-        Scanner classInput = new Scanner("./data/allCourses.txt");
+        Scanner classInput = new Scanner(new File("../data/allCourses.txt"));
         while(classInput.hasNextLine() != false){
             addClass(classInput.nextLine());
         }
         classInput.close();
         
         // read student course registrations
-        Scanner studentInput = new Scanner(new File("./data/studentCourses.txt"));
+        Scanner studentInput = new Scanner(new File("../data/studentCourses.txt"));
         while(studentInput.hasNextLine()) {
             String line = studentInput.nextLine().trim();
             String[] parts = line.split("\\|");

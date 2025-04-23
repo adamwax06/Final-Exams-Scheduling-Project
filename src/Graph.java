@@ -120,12 +120,6 @@ public class Graph{
         StringBuilder sb = new StringBuilder();
         sb.append("Graph with ").append(getVertexCount()).append(" vertices and ")
           .append(getEdgeCount()).append(" edges:\n");
-        
-        for (Map.Entry<String, Set<String>> entry : adjacencyList.entrySet()) {
-            sb.append(entry.getKey()).append(" -> ");
-            sb.append(String.join(", ", entry.getValue())).append("\n");
-        }
-        
         return sb.toString();
     }
 }
