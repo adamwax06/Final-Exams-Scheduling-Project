@@ -1,4 +1,5 @@
 import java.util.*;
+import java.io.*;
 
 public class ExamScheduler{
     // our conflict graph
@@ -36,22 +37,44 @@ public class ExamScheduler{
     }
 
     /**
-     * create a sample conflict graph for testing
+     * create a conflict graph for testing
      */
-    public void createSampleGraph() {
-        // add some sample classes
-        String[] classes = {"Math101", "CS101", "Physics101", "English101", "History101"};
-        for (String className : classes) {
-            addClass(className);
+    public void createGraph() {
+        try{
+            // add classes from existing course catalog
+        Scanner classInput = new Scanner("./data/allCourses.txt");
+        while(classInput.hasNextLine() != false){
+            addClass(classInput.nextLine());
         }
+        classInput.close();
         
-        // create some students and add appropriate edges
-        addConflict("Math101", "CS101");
-        addConflict("Math101", "Physics101");
-        addConflict("Math101", "English101");
-        addConflict("CS101", "History101");
-        addConflict("Physics101", "History101");
-        addConflict("English101", "History101");
+        // read student course registrations
+        Scanner studentInput = new Scanner(new File("./data/studentCourses.txt"));
+        while(studentInput.hasNextLine()) {
+            String line = studentInput.nextLine().trim();
+            String[] parts = line.split("\\|");
+            
+            if (parts.length == 2) {
+                String studentId = parts[0];
+                String[] courses = parts[1].split(",");
+                
+                // Add student's courses to the map
+                Set<String> courseSet = new HashSet<>(Arrays.asList(courses));
+                studentCourses.put(studentId, courseSet);
+                
+                // Create edges between all pairs of courses taken by this student
+                for (int i = 0; i < courses.length; i++) {
+                    for (int j = i + 1; j < courses.length; j++) {
+                        addConflict(courses[i], courses[j]);
+                    }
+                }
+            }
+        }
+        studentInput.close();
+        }
+        catch(Exception e){
+            System.out.println("There was an IO error.");
+        }
     }
 
     /**
@@ -263,7 +286,7 @@ public class ExamScheduler{
             ExamScheduler scheduler = new ExamScheduler();
             
             // create a sample graph
-            scheduler.createSampleGraph();
+            scheduler.createGraph();
             
             // print the graph
             System.out.println("Conflict Graph:");
