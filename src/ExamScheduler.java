@@ -45,13 +45,6 @@ public class ExamScheduler{
      */
     public void createGraph() {
         try{
-            // add classes from existing course catalog
-        Scanner classInput = new Scanner(new File("../data/allCourses.txt"));
-        while(classInput.hasNextLine() != false){
-            addClass(classInput.nextLine());
-        }
-        classInput.close();
-        
         // read student course registrations
         Scanner studentInput = new Scanner(new File("../data/studentCourses.txt"));
         while(studentInput.hasNextLine()) {
