@@ -285,11 +285,6 @@ public class ExamScheduler{
             // create a sample graph
             scheduler.createGraph();
             
-            // print the graph
-            System.out.println("Conflict Graph:");
-            System.out.println(scheduler.getGraph().toString());
-            System.out.println();
-            
             // color the graph
             scheduler.colorGraph();
             
