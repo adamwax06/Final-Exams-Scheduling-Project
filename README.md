@@ -23,5 +23,6 @@ Our approach follows these steps:
 
 Follow the commands:
 
-1. Enter "javac src/\*.java" in your terminal
-2. Enter "java src.ExamScheduler"
+1. Enter your data into data/studentCourses.txt following the provided format
+2. Enter "javac src/\*.java" in your terminal
+3. Enter "java src.ExamScheduler"
