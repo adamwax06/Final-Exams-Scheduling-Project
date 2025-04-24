@@ -13,7 +13,7 @@ public class Run{
             // color the graph
             scheduler.findMinimumColoring();
             
-            // print the schedule
+            // print the schedule for algo v1.1
             System.out.println("Number of time slots needed: " + scheduler.getNumTimeSlots());
             System.out.println("Exam Schedule:");
             Map<String, List<String>> schedule = scheduler.getExamSchedule();

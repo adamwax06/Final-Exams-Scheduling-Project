@@ -156,6 +156,7 @@ public class ExamScheduler{
     }
 
     /**
+     * COLORING ALGORITHM v1.1
  * Colors the graph multiple times, starting with each vertex,
  * and returns the minimum coloring found
  * 
@@ -207,8 +208,6 @@ public Map<String, Integer> findMinimumColoring() {
 }
 
 /**
- * COLORING ALGORITHM v1.1
- * 
  * Colors the graph using the given vertex ordering
  * 
  * @param vertices The ordering of vertices to use
