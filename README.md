@@ -29,5 +29,12 @@ Follow the commands:
 
 ## Current Algorithms
 
-1. COLORING ALGORITHM v1.0 (colorGraph())
-2. COLORING ALGORITHM v1.1 (findMinimumColoring())
+**IMPLEMENTED**
+
+1. COLORING ALGORITHM v1.0 (colorGraph() - Proprietary Algorithm)
+2. COLORING ALGORITHM v1.1 (findMinimumColoring() - Exhaustive Proprietary Algorithm)
+
+**TO BE IMPLEMENTED**
+
+1. Welsh-Powell Algorithm
+2. DSATUR Algorithm
