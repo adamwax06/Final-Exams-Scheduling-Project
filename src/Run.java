@@ -11,7 +11,7 @@ public class Run{
             scheduler.createGraph();
             
             // color the graph
-            scheduler.colorGraph();
+            scheduler.findMinimumColoring();
             
             // print the schedule
             System.out.println("Number of time slots needed: " + scheduler.getNumTimeSlots());

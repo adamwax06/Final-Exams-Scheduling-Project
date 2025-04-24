@@ -26,3 +26,8 @@ Follow the commands:
 1. Enter your data into data/studentCourses.txt following the provided format
 2. Enter "javac src/\*.java" in your terminal
 3. Enter "java src.Runr"
+
+## Current Algorithms
+
+1. COLORING ALGORITHM v1.0 (colorGraph())
+2. COLORING ALGORITHM v1.1 (findMinimumColoring())

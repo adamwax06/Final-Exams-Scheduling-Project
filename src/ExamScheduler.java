@@ -75,6 +75,8 @@ public class ExamScheduler{
     }
 
     /**
+     * COLOR ALGORITHM v1.0
+     * 
      * color the graph following the algorithm below:
      * 1. arbitrarily pick a vertex and color it
      * 2. go to neighbors and give different colors
@@ -152,6 +154,115 @@ public class ExamScheduler{
         
         return colors;
     }
+
+    /**
+ * Colors the graph multiple times, starting with each vertex,
+ * and returns the minimum coloring found
+ * 
+ * @return map of vertices to their assigned colors in the minimum coloring
+ */
+public Map<String, Integer> findMinimumColoring() {
+    // best coloring data
+    Map<String, Integer> bestColoring = null;
+    int minColors = Integer.MAX_VALUE;
+    
+    // get all vertices
+    List<String> allVertices = new ArrayList<>(graph.getVertices());
+    
+    // try starting with each vertex
+    for (String startVertex : allVertices) {
+        // clear previous coloring
+        colors.clear();
+        colorGroups.clear();
+        
+        // create a list with startVertex at the beginning
+        List<String> vertices = new ArrayList<>(allVertices);
+        vertices.remove(startVertex);
+        vertices.add(0, startVertex);
+        
+        // sort remaining vertices by degree (highest first)
+        vertices.subList(1, vertices.size()).sort(
+            (v1, v2) -> Integer.compare(graph.getDegree(v2), graph.getDegree(v1))
+        );
+        
+        // run coloring algorithm with this ordering
+        colorGraphWithOrdering(vertices);
+        
+        // update color groups
+        updateColorGroups();
+        
+        // check if this coloring is better
+        int numColors = colorGroups.size();
+        if (numColors < minColors) {
+            minColors = numColors;
+            bestColoring = new HashMap<>(colors);
+        }
+    }
+    
+    // set the best coloring as the current coloring
+    colors = bestColoring;
+    updateColorGroups();
+    
+    return colors;
+}
+
+/**
+ * COLORING ALGORITHM v1.1
+ * 
+ * Colors the graph using the given vertex ordering
+ * 
+ * @param vertices The ordering of vertices to use
+ */
+private void colorGraphWithOrdering(List<String> vertices) {
+    // process all vertices with the algorithm
+    while (!vertices.isEmpty()) {
+        // step 1: Pick the next vertex and color it
+        String current = vertices.remove(0);
+            
+        // get colors used by neighbors
+        Set<Integer> neighborColors = new HashSet<>();
+        for (String neighbor : graph.getNeighbors(current)) {
+            if (colors.containsKey(neighbor)) {
+                neighborColors.add(colors.get(neighbor));
+            }
+        }
+        
+        // assign smallest available color
+        int color = 0;
+        while (neighborColors.contains(color)) {
+            color++;
+        }
+        
+        colors.put(current, color);
+        
+        // step 2: go to neighbors and give different colors
+        for (String neighbor : graph.getNeighbors(current)) {
+            if (!colors.containsKey(neighbor)) {
+                // get colors used by neighbor's neighbors
+                Set<Integer> neighborOfNeighborColors = new HashSet<>();
+                for (String n : graph.getNeighbors(neighbor)) {
+                    if (colors.containsKey(n)) {
+                        neighborOfNeighborColors.add(colors.get(n));
+                    }
+                }
+                
+                // assign smallest available color different from current
+                int neighborColor = 0;
+                while (neighborOfNeighborColors.contains(neighborColor) || neighborColor == color) {
+                    neighborColor++;
+                }
+                
+                colors.put(neighbor, neighborColor);
+            }
+        }
+        
+        // step 3: Check for conflicts between neighbors
+        resolveConflicts();
+        
+        // step 4: If not fully colored, repeat with uncolored vertices
+        vertices.removeIf(v -> colors.containsKey(v));
+    }
+}
     
     /**
      * check and resolve color conflicts between adjacent vertices
@@ -275,32 +386,5 @@ public class ExamScheduler{
      */
     public Map<String, Integer> getColors() {
         return colors;
-    }
-    
-    public static void main(String[] args) {
-        try {
-            // create a new scheduler
-            ExamScheduler scheduler = new ExamScheduler();
-            
-            // create a sample graph
-            scheduler.createGraph();
-            
-            // color the graph
-            scheduler.colorGraph();
-            
-            // print the schedule
-            System.out.println("Number of time slots needed: " + scheduler.getNumTimeSlots());
-            System.out.println("Exam Schedule:");
-            Map<String, List<String>> schedule = scheduler.getExamSchedule();
-            for (Map.Entry<String, List<String>> entry : schedule.entrySet()) {
-                System.out.println(entry.getKey() + ": " + String.join(", ", entry.getValue()));
-            }
-            
-            // validate the coloring
-            System.out.println("\nIs valid coloring: " + scheduler.isValidColoring());
-            
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
     }
 }
