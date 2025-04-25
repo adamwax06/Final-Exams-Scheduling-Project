@@ -39,3 +39,4 @@ Follow the commands:
 1. Welsh-Powell Algorithm
 2. DSATUR Algorithm
 3. RLF(Recursive Largest First)
+4. MACOL
